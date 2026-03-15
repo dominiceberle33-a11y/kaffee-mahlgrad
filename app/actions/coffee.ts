@@ -1,9 +1,10 @@
 'use server'
 
 import { revalidatePath } from 'next/cache'
-import { supabase } from '@/lib/supabase'
+import { getSupabase } from '@/lib/supabase'
 
 export async function getCoffees() {
+  const supabase = getSupabase()
   const { data, error } = await supabase
     .from('coffees')
     .select('*')
@@ -14,9 +15,10 @@ export async function getCoffees() {
 }
 
 export async function addCoffee(formData: FormData) {
+  const supabase = getSupabase()
   const name = formData.get('name') as string
   const roaster = formData.get('roaster') as string
-  const mahlgrad = parseInt(formData.get('mahlgrad') as string)
+  const mahlgrad = parseFloat(formData.get('mahlgrad') as string)
   const notizen = formData.get('notizen') as string
 
   const { error } = await supabase.from('coffees').insert({
@@ -31,9 +33,10 @@ export async function addCoffee(formData: FormData) {
 }
 
 export async function updateCoffee(id: string, formData: FormData) {
+  const supabase = getSupabase()
   const name = formData.get('name') as string
   const roaster = formData.get('roaster') as string
-  const mahlgrad = parseInt(formData.get('mahlgrad') as string)
+  const mahlgrad = parseFloat(formData.get('mahlgrad') as string)
   const notizen = formData.get('notizen') as string
 
   const { error } = await supabase
@@ -52,6 +55,7 @@ export async function updateCoffee(id: string, formData: FormData) {
 }
 
 export async function deleteCoffee(id: string) {
+  const supabase = getSupabase()
   const { error } = await supabase.from('coffees').delete().eq('id', id)
   if (error) throw new Error(error.message)
   revalidatePath('/')
